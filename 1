@@ -1,0 +1,34 @@
+import javax.swing.*;
+import java.awt.*;
+
+class AttendanceDay {
+    public static void main(String[] args) {
+        JFrame frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 250);
+        frame.setLayout(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(5, 5, 5, 5);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JLabel rollLabel = new JLabel("Enter Roll No:");
+        JTextField rollField = new JTextField(15);
+        JLabel nameLabel = new JLabel("Enter Student Name:");
+        JTextField nameField = new JTextField(15);
+        JButton markButton = new JButton("Mark Attendance");
+        JButton showListButton = new JButton("Show List");
+        JTextArea presentList = new JTextArea(8, 30);
+
+
+
+        gbc.gridx = 0; gbc.gridy = 0; frame.add(rollLabel, gbc);
+        gbc.gridx = 1; frame.add(rollField, gbc);
+        gbc.gridx = 0; gbc.gridy = 1; frame.add(nameLabel, gbc);
+        gbc.gridx = 1; frame.add(nameField, gbc);
+        gbc.gridx = 0; gbc.gridy = 2; frame.add(markButton, gbc);
+        gbc.gridx = 1; frame.add(showListButton, gbc);
+        gbc.gridwidth = 2; gbc.gridx = 0; gbc.gridy = 3; frame.add(new JScrollPane(presentList), gbc);
+
+        frame.setVisible(true);
+    }
+}
