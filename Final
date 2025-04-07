@@ -1,0 +1,160 @@
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+class AttendanceGUI {
+    private static final Map<String, String> studentNames = Map.ofEntries(
+            Map.entry("281", "Jahid"),
+            Map.entry("287", "Arina"),
+            Map.entry("288", "Mowrin"),
+            Map.entry("289", "Tashin"),
+            Map.entry("290", "Jaria"),
+            Map.entry("291", "Salim"),
+            Map.entry("292", "Wmmi"),
+            Map.entry("295", "Nila"),
+            Map.entry("296", "Tahia"),
+            Map.entry("301", "Salman"),
+            Map.entry("303", "Usama"),
+            Map.entry("305", "Prome"),
+            Map.entry("307", "Shirin"),
+            Map.entry("308", "Urmi"),
+            Map.entry("311", "Hamja"),
+            Map.entry("312", "Tanni"),
+            Map.entry("314", "Adnan"),
+            Map.entry("315", "Samiya"),
+            Map.entry("319", "Junaed")
+    );
+
+    private static final Map<String, String> presentStudents = new LinkedHashMap<>();
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(AttendanceGUI::createAndShowGUI);
+    }
+
+    private static void createAndShowGUI() {
+        JFrame frame = new JFrame("📋 Attendance Management System");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(500, 280);
+        frame.setLayout(new GridBagLayout());
+        frame.setResizable(false);
+        frame.setLocationRelativeTo(null);
+
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(8, 8, 8, 8);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        JLabel titleLabel = new JLabel("Student Attendance System", JLabel.CENTER);
+        titleLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        titleLabel.setForeground(new Color(33, 33, 33));
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.gridwidth = 2;
+        frame.add(titleLabel, gbc);
+
+        // Dynamic Date Label
+        String currentDate = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
+        JLabel dateLabel = new JLabel("📅 Date: " + currentDate, JLabel.CENTER);
+        dateLabel.setFont(new Font("Arial", Font.ITALIC, 14));
+        dateLabel.setForeground(new Color(100, 100, 100));
+        gbc.gridy = 1;
+        frame.add(dateLabel, gbc);
+
+        // Input Fields
+        gbc.gridwidth = 1;
+        gbc.gridy = 2;
+        gbc.gridx = 0;
+        JLabel rollLabel = new JLabel("Student ID:");
+        JTextField rollField = new JTextField(15);
+        frame.add(rollLabel, gbc);
+
+        gbc.gridx = 1;
+        frame.add(rollField, gbc);
+
+        // Buttons
+        JButton markButton = new JButton("✅ Mark Attendance");
+        JButton showListButton = new JButton("📃 Show Attendance");
+
+        styleButton(markButton, new Color(0, 123, 255));
+        styleButton(showListButton, new Color(40, 167, 69));
+
+        gbc.gridy = 3;
+        gbc.gridx = 0;
+        frame.add(markButton, gbc);
+        gbc.gridx = 1;
+        frame.add(showListButton, gbc);
+
+        // Actions
+        markButton.addActionListener(e -> {
+            String rollNo = rollField.getText().trim();
+
+            if (rollNo.isEmpty()) {
+                showError(frame, "Student ID is required!");
+                return;
+            }
+
+            if (!studentNames.containsKey(rollNo)) {
+                showError(frame, "Unknown ID! Please enter a valid one.");
+                return;
+            }
+
+            if (presentStudents.containsKey(rollNo)) {
+                showError(frame, "Student already marked present!");
+                return;
+            }
+
+            String name = studentNames.get(rollNo);
+            presentStudents.put(rollNo, name);
+            rollField.setText("");
+            showInfo(frame, "Marked present: " + name + " (ID: " + rollNo + ")");
+        });
+
+        showListButton.addActionListener(e -> showAttendanceList(currentDate));
+
+        frame.setVisible(true);
+    }
+
+    private static void showAttendanceList(String date) {
+        JFrame listFrame = new JFrame("📃 Present Students - " + date);
+        listFrame.setSize(400, 300);
+        listFrame.setLayout(new BorderLayout());
+        listFrame.setLocationRelativeTo(null);
+
+        JTextArea listArea = new JTextArea();
+        listArea.setEditable(false);
+        listArea.setFont(new Font("Monospaced", Font.PLAIN, 14));
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("✅ Attendance List for ").append(date).append(":\n\n");
+
+        if (presentStudents.isEmpty()) {
+            sb.append("No students marked present yet.\n");
+        } else {
+            for (Map.Entry<String, String> entry : presentStudents.entrySet()) {
+                sb.append("ID: ").append(entry.getKey())
+                        .append(" | Name: ").append(entry.getValue()).append("\n");
+            }
+        }
+
+        listArea.setText(sb.toString());
+        listFrame.add(new JScrollPane(listArea), BorderLayout.CENTER);
+        listFrame.setVisible(true);
+    }
+
+    private static void styleButton(JButton button, Color bgColor) {
+        button.setBackground(bgColor);
+        button.setForeground(Color.WHITE);
+        button.setFocusPainted(false);
+        button.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        button.setFont(new Font("Arial", Font.BOLD, 12));
+    }
+
+    private static void showError(Component parent, String message) {
+        JOptionPane.showMessageDialog(parent, message, "❌ Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private static void showInfo(Component parent, String message) {
+        JOptionPane.showMessageDialog(parent, message, "✅ Success", JOptionPane.INFORMATION_MESSAGE);
+    }
+}
